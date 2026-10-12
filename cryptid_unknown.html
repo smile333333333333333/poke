@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>CRYPTID: UNKNOWN</title>
+<style>
+:root{--ink:#eaf1e8;--muted:#a8b7aa;--panel:#111d1c;--line:#3a5550;--lime:#c8f27a;--pink:#ef9aaf;--gold:#f2cb76}
+*{box-sizing:border-box}body{margin:0;background:#091211;color:var(--ink);font:15px/1.4 system-ui,-apple-system,Segoe UI,sans-serif}
+button{font:inherit;color:var(--ink);background:#263a35;border:1px solid #557068;border-radius:10px;padding:10px 13px;cursor:pointer;transition:.15s}
+button:hover{background:#365149;border-color:var(--lime)}button:disabled{opacity:.38;cursor:not-allowed}
+button.primary{background:#c8f27a;color:#152019;border-color:#e2ffae;font-weight:800}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #263b36;background:#0e1917;gap:12px}
+.brand{font-weight:950;letter-spacing:.13em;font-size:clamp(16px,3vw,24px)}.brand span{color:var(--lime)}.subtitle{color:var(--muted);font-size:11px;letter-spacing:.16em}
+main{max-width:1200px;margin:auto;padding:14px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px}
+.gameframe{background:#111d1c;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 16px 50px #0006}
+.scenehead{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2c433d;gap:8px}.loc{font-weight:800}.small{font-size:12px;color:var(--muted)}
+canvas{display:block;width:100%;height:auto;aspect-ratio:16/10;background:#182c26;image-rendering:auto;touch-action:none}
+.below{padding:12px 14px;border-top:1px solid #2c433d;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hint{font-size:12px;color:#b9c8bb}.controls{display:flex;gap:6px;flex-wrap:wrap}
+.sidebar{display:flex;flex-direction:column;gap:12px}.panel{background:#111d1c;border:1px solid var(--line);border-radius:14px;padding:13px;min-width:0}.panel h3{margin:0 0 10px;font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--lime)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat{background:#192a26;border-radius:9px;padding:9px}.stat strong{display:block;font-size:20px}.stat span{font-size:11px;color:var(--muted)}
+.partyitem,.dexitem{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid #263b36}.partyitem:last-child,.dexitem:last-child{border:0}.miniart{width:44px;height:44px;flex:none;border-radius:10px;background:#243b34;display:grid;place-items:center;font-size:25px;border:1px solid #45645a}.partyname{font-weight:750;font-size:13px}.partytype{font-size:11px;color:var(--muted)}.hpbar{height:5px;background:#34433c;border-radius:99px;overflow:hidden;margin-top:5px}.hpbar i{display:block;height:100%;background:#a9e879}
+.log{font-size:12px;color:#c4d0c5;max-height:120px;overflow:auto}.log p{margin:0 0 7px}.log p:first-child{color:var(--lime)}
+.overlay{position:fixed;inset:0;background:#030a09d9;display:none;align-items:center;justify-content:center;padding:14px;z-index:5;overflow:auto}.overlay.show{display:flex}.modal{width:min(760px,100%);background:#111d1c;border:1px solid #59776c;border-radius:18px;overflow:hidden;box-shadow:0 25px 100px #000b}.modalhead{padding:15px 18px;border-bottom:1px solid #30483f;display:flex;justify-content:space-between;align-items:center;gap:10px}.modalhead h2{font-size:18px;margin:0}.modalbody{padding:18px}.battlegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.creaturecard{border:1px solid #3c5b50;background:#182a25;border-radius:14px;padding:12px;min-width:0}.creatureart{height:150px;border-radius:12px;display:grid;place-items:center;background:radial-gradient(ellipse at center,#355447,#172823 70%);margin-bottom:10px;position:relative;overflow:hidden}.creatureart svg{width:100%;height:100%;max-height:150px}.creaturetitle{display:flex;justify-content:space-between;gap:8px;font-weight:800}.tag{font-size:10px;color:#d5e6d8;border:1px solid #4b685c;padding:2px 7px;border-radius:99px;white-space:nowrap}.moves{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.battlefooter{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.notice{background:#1d3029;border:1px solid #466555;padding:10px;border-radius:10px;color:#d4e1d5;font-size:13px;margin-bottom:12px}.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button.active{background:var(--lime);color:#172119;border-color:var(--lime);font-weight:800}.gridcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}.cryptidcard{border:1px solid #38564b;border-radius:12px;padding:11px;background:#192b26}.cryptidcard .emoji{font-size:32px}.cryptidcard strong{display:block;margin:4px 0}.cryptidcard p{font-size:12px;color:#b6c6b9;margin:4px 0}.mobilepad{display:none;grid-template-columns:repeat(3,45px);gap:5px;touch-action:manipulation}.mobilepad button{padding:9px 0}
+footer{text-align:center;color:#6e8477;font-size:11px;padding:0 12px 20px}
+@media(max-width:800px){main{grid-template-columns:1fr;padding:8px}.sidebar{display:grid;grid-template-columns:1fr 1fr}.sidebar .panel:first-child{grid-column:1/-1}.scenehead{padding:9px 11px}.below{padding:10px}.mobilepad{display:grid}.hint{max-width:45%}.panel{padding:10px}}
+@media(max-width:480px){.sidebar{grid-template-columns:1fr}.sidebar .panel:first-child{grid-column:auto}.battlegrid{grid-template-columns:1fr}.creatureart{height:120px}.modalbody{padding:12px}.moves{grid-template-columns:1fr 1fr}.brand{letter-spacing:.07em}}
+</style>
+</head>
+<body>
+<header><div><div class="brand">CRYPTID<span>:</span> UNKNOWN</div><div class="subtitle">FIELD RESEARCH DIVISION · CASE 001</div></div><div class="small">A strange world is watching.</div></header>
+<main>
+<section class="gameframe">
+ <div class="scenehead"><div><div class="loc" id="locationName">Mosslight Trail</div><div class="small" id="locationSub">Pine County · 06:42 PM</div></div><div class="small" id="weather">FOG ROLLING IN</div></div>
+ <canvas id="world" width="960" height="600" aria-label="Game world"></canvas>
+ <div class="below"><div class="hint" id="hint">WASD / arrows to move · E to inspect · walk through tall grass to find cryptids</div><div class="controls"><button id="mapBtn">Map</button><button id="dexBtn">Field Guide</button><button id="bagBtn">Pack</button></div><div class="mobilepad" aria-label="Movement controls"><span></span><button data-move="up">▲</button><span></span><button data-move="left">◀</button><button data-move="down">▼</button><button data-move="right">▶</button></div></div>
+</section>
+<aside class="sidebar">
+ <div class="panel"><h3>Field status</h3><div class="stats"><div class="stat"><strong id="caughtCount">0</strong><span>Cryptids found</span></div><div class="stat"><strong id="capsuleCount">6</strong><span>Containment pods</span></div><div class="stat"><strong id="researchCount">0</strong><span>Research points</span></div><div class="stat"><strong id="badgeCount">0/4</strong><span>Sites investigated</span></div></div></div>
+ <div class="panel"><h3>Your team</h3><div id="partyList"></div><div class="small" style="margin-top:8px">Rest at the field station to recover your team.</div></div>
+ <div class="panel"><h3>Recent sightings</h3><div class="log" id="log"><p>• Dispatch: Welcome to Pine County. Stay on the marked trails.</p><p>• Your field kit contains 6 containment pods.</p></div></div>
+ <div class="panel"><h3>Field notes</h3><div class="small" id="objective">Investigate the four marked sites and document the strange wildlife.</div></div>
+</aside>
+</main>
+<footer>Original cryptid-inspired creatures · Single-player field research RPG · Progress saves in this browser</footer>
+
+<div class="overlay" id="overlay"><div class="modal"><div class="modalhead"><h2 id="modalTitle">Field report</h2><button id="closeModal">Close ✕</button></div><div class="modalbody" id="modalBody"></div></div></div>
+<script>
+(()=> {
+const canvas=document.getElementById('world'),ctx=canvas.getContext('2d');
+const $=id=>document.getElementById(id);
+const W=960,H=600,T=40;
+const species=[
+{id:'mossback',name:'Mossback',type:'Woodland',rarity:'Common',emoji:'🦌',hp:26,atk:6,def:4,spd:5,color:'#8fb879',desc:'A shy, long-legged watcher with moss growing between its antlers.',moves:[['Bramble Bump',6],['Moss Veil',0],['Root Snare',8]]},
+{id:'lanternling',name:'Lanternling',type:'Spectral',rarity:'Uncommon',emoji:'🕯️',hp:22,atk:7,def:3,spd:8,color:'#e5c46d',desc:'A floating light seen just beyond the reach of a flashlight.',moves:[['Glimmer',6],['Cold Flicker',8],['Vanishing Act',0]]},
+{id:'mudmaw',name:'Mudmaw',type:'Marsh',rarity:'Common',emoji:'🐸',hp:32,atk:7,def:6,spd:3,color:'#7fa78a',desc:'A broad-mouthed marsh lurker that can hold its breath for hours.',moves:[['Bog Chomp',7],['Silt Spray',6],['Sinkhole Slam',10]]},
+{id:'nightstitch',name:'Nightstitch',type:'Unknown',rarity:'Rare',emoji:'🦇',hp:24,atk:9,def:3,spd:9,color:'#b0a0d6',desc:'A winged silhouette that seems to skip between frames of a recording.',moves:[['Static Peck',8],['Signal Shriek',10],['Glitch Step',0]]},
+{id:'hollowhorn',name:'Hollowhorn',type:'Woodland',rarity:'Uncommon',emoji:'🐐',hp:34,atk:8,def:7,spd:4,color:'#c1b5a1',desc:'Its antlers are hollow. Wind passing through them sounds like distant voices.',moves:[['Echo Ram',8],['Pine Guard',0],['Hollow Call',10]]},
+{id:'redcapper',name:'Redcapper',type:'Cavern',rarity:'Uncommon',emoji:'🍄',hp:25,atk:10,def:3,spd:7,color:'#c86f67',desc:'A mushroom-crowned scavenger that leaves tiny red spores on old concrete.',moves:[['Spore Puff',7],['Cap Slam',9],['Murk Cloud',0]]},
+{id:'lakeglass',name:'Lakeglass',type:'Aquatic',rarity:'Rare',emoji:'🐍',hp:36,atk:9,def:7,spd:6,color:'#7fc6c4',desc:'A lake serpent with reflective scales that show a sky from another day.',moves:[['Ripple Lash',8],['Mirror Current',0],['Deepwater Coil',11]]},
+{id:'roadwailer',name:'Roadwailer',type:'Spectral',rarity:'Rare',emoji:'👻',hp:29,atk:11,def:4,spd:8,color:'#c4cbd0',desc:'A pale roadside figure whose cry can be heard from miles away.',moves:[['Dread Note',9],['Cold Grip',8],['Last Mile',12]]},
+{id:'thunderstag',name:'Thunderstag',type:'Storm',rarity:'Mythic',emoji:'⚡',hp:48,atk:13,def:9,spd:9,color:'#e7d17c',desc:'A storm-front guardian with branching antlers that crackle before lightning.',moves:[['Static Rush',10],['Storm Crown',13],['Thunderfall',16]]},
+{id:'theunseen',name:'The Unseen',type:'Unknown',rarity:'Mythic',emoji:'◉',hp:42,atk:12,def:8,spd:10,color:'#a5d7bb',desc:'Field cameras record its shadow. The creature itself is never in the frame.',moves:[['Frame Skip',10],['Blind Spot',0],['Unrecorded',15]]}
+];
+const places=[
+{name:'Mosslight Trail',sub:'Pine County · 06:42 PM',weather:'FOG ROLLING IN',x:0,y:0,biome:'woods',desc:'Pines crowd close to the path. Something keeps pace just beyond the tree line.',site:false},
+{name:'Blackwater Marsh',sub:'South Basin · 08:13 PM',weather:'LOW MIST',x:1,y:0,biome:'marsh',desc:'The water is perfectly still, even when the reeds move.',site:true},
+{name:'Old Quarry',sub:'North Ridge · 11:26 PM',weather:'COLD WIND',x:0,y:1,biome:'quarry',desc:'An abandoned quarry. Fresh footprints end at a sheer wall.',site:true},
+{name:'Hollow Mile',sub:'County Road 9 · 01:04 AM',weather:'VISIBILITY: LOW',x:1,y:1,biome:'road',desc:'Every mile marker points toward the town, no matter which way you drive.',site:true},
+{name:'Pine County Field Station',sub:'Research Outpost · 07:00 AM',weather:'CLEARING',x:-1,y:0,biome:'station',desc:'A temporary field station. Rest, review your notes, and resupply.',site:true}
+];
+let player={x:480,y:320,dir:'down',moving:false};
+let current=0,steps=0,encounter=null,enemy=null,active=0,turnBusy=false;
+let pods=6,research=0,sites=new Set(),dex=new Set(),party=[makeMon('mossback',3)],logs=[],worldSeed=41;
+let mapObjects=[],grass=[],decor=[],battleReturn=0;
+function makeMon(id,level=2){let s=species.find(a=>a.id===id)||species[0];return {id,level,maxHp:s.hp+level*3,hp:s.hp+level*3,atk:s.atk+Math.floor(level*.7),def:s.def+Math.floor(level*.4),xp:0};}
+function sp(id){return species.find(s=>s.id===id)||species[0]}
+function addLog(t){logs.unshift('• '+t);logs=logs.slice(0,7);$('log').innerHTML=logs.map(t=>'<p>'+t+'</p>').join('')}
+function rnd(){worldSeed=(worldSeed*1664525+1013904223)>>>0;return worldSeed/4294967296}
+function drawCreature(id,x,y,scale=1,glow=false){const s=sp(id);ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);if(glow){ctx.shadowColor=s.color;ctx.shadowBlur=25}
+ctx.fillStyle='#0005';ctx.beginPath();ctx.ellipse(0,42,35,9,0,0,Math.PI*2);ctx.fill();
+if(id==='mossback'||id==='hollowhorn'||id==='thunderstag'){
+ctx.strokeStyle=s.color;ctx.lineWidth=7;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-18,15);ctx.lineTo(-22,42);ctx.moveTo(18,15);ctx.lineTo(23,42);ctx.stroke();
+ctx.fillStyle=s.color;ctx.beginPath();ctx.ellipse(0,0,29,25,-.1,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(21,-18,15,13,-.4,0,Math.PI*2);ctx.fill();
+ctx.strokeStyle=id==='thunderstag'?'#f7e58a':'#a8b5a0';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(17,-25);ctx.quadraticCurveTo(0,-50,-14,-39);ctx.moveTo(17,-25);ctx.quadraticCurveTo(28,-51,40,-39);ctx.stroke();
+if(id==='mossback'){ctx.fillStyle='#547c53';for(let i=0;i<7;i++){ctx.beginPath();ctx.arc(-20+i*7,-18+Math.sin(i)*5,6,0,7);ctx.fill()}}
+}else if(id==='lanternling'){
+ctx.fillStyle='#f8d88a';ctx.beginPath();ctx.moveTo(0,-39);ctx.bezierCurveTo(37,-14,28,17,0,29);ctx.bezierCurveTo(-28,17,-37,-14,0,-39);ctx.fill();ctx.fillStyle='#fff8ce';ctx.beginPath();ctx.ellipse(0,-2,11,17,0,0,7);ctx.fill();
+}else if(id==='mudmaw'){
+ctx.fillStyle=s.color;ctx.beginPath();ctx.ellipse(0,9,39,27,0,0,7);ctx.fill();ctx.fillStyle='#31483b';ctx.beginPath();ctx.ellipse(24,5,21,16,-.2,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(11,-7,5,0,7);ctx.arc(30,-7,5,0,7);ctx.fill();ctx.fillStyle='#202923';ctx.beginPath();ctx.arc(12,-7,2,0,7);ctx.arc(30,-7,2,0,7);ctx.fill();
+}else if(id==='nightstitch'){
+ctx.fillStyle=s.color;ctx.beginPath();ctx.moveTo(-5,-7);ctx.quadraticCurveTo(-48,-49,-39,-2);ctx.quadraticCurveTo(-26,21,-7,13);ctx.lineTo(0,35);ctx.lineTo(9,13);ctx.quadraticCurveTo(34,26,45,-9);ctx.quadraticCurveTo(19,-25,6,-7);ctx.closePath();ctx.fill();ctx.fillStyle='#f4e9ff';ctx.beginPath();ctx.arc(0,-8,5,0,7);ctx.fill();
+}else if(id==='redcapper'){
+ctx.fillStyle='#e5d3b4';ctx.beginPath();ctx.ellipse(0,18,25,22,0,0,7);ctx.fill();ctx.fillStyle=s.color;ctx.beginPath();ctx.ellipse(0,-3,34,20,0,Math.PI,Math.PI*2);ctx.fill();ctx.fillStyle='#f0c6a4';for(let i=-2;i<=2;i++){ctx.beginPath();ctx.arc(i*12,-11+(i%2)*4,3,0,7);ctx.fill()}ctx.fillStyle='#2b2525';ctx.beginPath();ctx.arc(10,15,3,0,7);ctx.arc(-7,15,3,0,7);ctx.fill();
+}else if(id==='lakeglass'){
+ctx.fillStyle=s.color;ctx.beginPath();ctx.moveTo(-40,23);ctx.bezierCurveTo(-16,-23,10,34,38,-19);ctx.quadraticCurveTo(55,-34,46,-4);ctx.bezierCurveTo(18,42,-10,-5,-40,23);ctx.fill();ctx.fillStyle='#eafff8';ctx.beginPath();ctx.arc(31,-18,4,0,7);ctx.fill();
+}else if(id==='roadwailer'){
+ctx.fillStyle=s.color;ctx.beginPath();ctx.moveTo(-25,31);ctx.quadraticCurveTo(-8,4,-18,-16);ctx.quadraticCurveTo(0,-43,18,-16);ctx.quadraticCurveTo(7,8,29,31);ctx.quadraticCurveTo(0,19,-25,31);ctx.fill();ctx.fillStyle='#26302f';ctx.beginPath();ctx.ellipse(0,-12,10,14,0,0,7);ctx.fill();
+}else if(id==='theunseen'){
+ctx.strokeStyle=s.color;ctx.lineWidth=3;ctx.setLineDash([4,5]);ctx.beginPath();ctx.ellipse(0,0,34,44,0,0,7);ctx.stroke();ctx.fillStyle=s.color+'aa';ctx.beginPath();ctx.arc(0,0,15,0,7);ctx.fill();ctx.fillStyle='#091211';ctx.beginPath();ctx.arc(0,0,7,0,7);ctx.fill();
+}
+if(id==='thunderstag'){ctx.strokeStyle='#fff2a8';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-25,-28);ctx.lineTo(-8,-40);ctx.lineTo(-14,-24);ctx.lineTo(2,-35);ctx.stroke()}
+ctx.restore()}
+function buildWorld(){mapObjects=[];grass=[];decor=[];let biome=places[current].biome;
+for(let i=0;i<90;i++){let x=rnd()*W,y=rnd()*H;decor.push({x,y,r:10+rnd()*19,type:rnd()})}
+for(let i=0;i<12;i++){let x=60+rnd()*(W-120),y=50+rnd()*(H-100);grass.push({x,y,w:40+rnd()*85,h:35+rnd()*75})}
+if(biome==='station'){mapObjects=[{x:360,y:180,w:230,h:135,type:'station',label:'FIELD STATION'},{x:170,y:350,w:105,h:80,type:'crate',label:'SUPPLY CRATE'}]}
+else if(biome==='road'){mapObjects=[{x:0,y:80,w:960,h:60,type:'road',label:''},{x:690,y:160,w:140,h:90,type:'car',label:'ABANDONED CAR'},{x:150,y:360,w:90,h:90,type:'sign',label:'MILE MARKER'}]}
+else if(biome==='quarry'){mapObjects=[{x:70,y:80,w:200,h:125,type:'rock',label:'QUARRY FACE'},{x:670,y:100,w:190,h:150,type:'rock',label:'QUARRY FACE'},{x:370,y:410,w:170,h:95,type:'crate',label:'OLD EQUIPMENT'}]}
+else if(biome==='marsh'){mapObjects=[{x:70,y:320,w:240,h:160,type:'water',label:'BLACKWATER'},{x:620,y:90,w:220,h:150,type:'water',label:'BLACKWATER'},{x:430,y:330,w:85,h:55,type:'stump',label:'SUNKEN STUMP'}]}
+else {mapObjects=[{x:130,y:160,w:65,h:85,type:'tree',label:''},{x:730,y:100,w:80,h:110,type:'tree',label:''},{x:570,y:380,w:85,h:110,type:'tree',label:''},{x:230,y:430,w:75,h:95,type:'tree',label:''}]}
+}
+function drawWorld(){
+let biome=places[current].biome;
+let bg=biome==='marsh'?'#203a34':biome==='quarry'?'#373d36':biome==='road'?'#28342d':biome==='station'?'#273b32':'#1e392b';
+ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+if(biome==='woods'||biome==='station'){for(let x=0;x<W;x+=80){ctx.fillStyle='#294734';ctx.fillRect(x,0,5,H);for(let y=25;y<H;y+=115){ctx.fillStyle='#31543a';ctx.beginPath();ctx.moveTo(x-35,y+38);ctx.lineTo(x+20,y-48);ctx.lineTo(x+70,y+38);ctx.fill();ctx.fillStyle='#203d2b';ctx.beginPath();ctx.moveTo(x-30,y+65);ctx.lineTo(x+20,y-10);ctx.lineTo(x+70,y+65);ctx.fill()}}}
+if(biome==='marsh'){ctx.fillStyle='#294b43';for(let i=0;i<13;i++){ctx.beginPath();ctx.ellipse((i*91+37)%W,(i*137+40)%H,70,35,i*.4,0,7);ctx.fill()}ctx.strokeStyle='#62846a';for(let i=0;i<40;i++){let x=(i*71)%W,y=(i*97)%H;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+4,y-17);ctx.stroke()}}
+if(biome==='quarry'){ctx.fillStyle='#50574d';for(let i=0;i<12;i++){ctx.beginPath();ctx.moveTo(i*85,0);ctx.lineTo(i*85+35,60);ctx.lineTo(i*85+15,180);ctx.lineTo(i*85-30,100);ctx.fill()}ctx.fillStyle='#414b42';ctx.fillRect(0,0,W,40)}
+if(biome==='road'){ctx.fillStyle='#55564b';ctx.fillRect(0,75,W,75);ctx.strokeStyle='#d4c58b';ctx.setLineDash([36,24]);ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,112);ctx.lineTo(W,112);ctx.stroke();ctx.setLineDash([])}
+// Ground texture
+for(let i=0;i<115;i++){let x=(i*137+43)%W,y=(i*211+19)%H;ctx.fillStyle=i%3?'#b6c39c13':'#08140d20';ctx.fillRect(x,y,2+i%4,2)}
+grass.forEach(g=>{ctx.fillStyle=biome==='marsh'?'#527c4d':biome==='quarry'?'#777e5a':'#4e7e49';ctx.beginPath();ctx.ellipse(g.x,g.y,g.w/2,g.h/2,0,0,7);ctx.fill();for(let i=0;i<13;i++){let x=g.x+(rnd()-.5)*g.w,y=g.y+(rnd()-.5)*g.h;ctx.strokeStyle=i%2?'#8baa5c':'#315d3d';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y+7);ctx.lineTo(x-4,y-6);ctx.stroke()}});
+mapObjects.forEach(o=>drawObject(o));
+decor.forEach(d=>{if(d.type>.5){ctx.fillStyle='#9b9c6c22';ctx.beginPath();ctx.ellipse(d.x,d.y,d.r,d.r*.5,d.r,0,7);ctx.fill()}});
+if(places[current].site){ctx.fillStyle='#d7ed9b';ctx.beginPath();ctx.arc(900,42,9,0,7);ctx.fill();ctx.strokeStyle='#d7ed9b';ctx.beginPath();ctx.arc(900,42,15,0,7);ctx.stroke();ctx.fillStyle='#122018';ctx.font='bold 11px system-ui';ctx.fillText('!',896,46)}
+drawPlayer();
+if(encounter===null){ctx.fillStyle='#dce9d7';ctx.font='12px system-ui';ctx.fillText('▲',player.x-4,player.y-24)}
+}
+function drawObject(o){ctx.save();if(o.type==='tree'){ctx.fillStyle='#5b4937';ctx.fillRect(o.x+o.w*.42,o.y+o.h*.45,o.w*.2,o.h*.6);ctx.fillStyle='#173c29';ctx.beginPath();ctx.arc(o.x+o.w/2,o.y+o.h*.35,o.w*.65,0,7);ctx.fill();ctx.fillStyle='#2b5738';ctx.beginPath();ctx.arc(o.x+o.w*.3,o.y+o.h*.28,o.w*.45,0,7);ctx.fill()}
+else if(o.type==='station'){ctx.fillStyle='#6c7460';ctx.fillRect(o.x,o.y,o.w,o.h);ctx.fillStyle='#929784';ctx.beginPath();ctx.moveTo(o.x-15,o.y);ctx.lineTo(o.x+o.w/2,o.y-48);ctx.lineTo(o.x+o.w+15,o.y);ctx.fill();ctx.fillStyle='#273c36';ctx.fillRect(o.x+25,o.y+32,45,42);ctx.fillRect(o.x+o.w-75,o.y+32,45,42);ctx.fillStyle='#a6d0a4';ctx.fillRect(o.x+25,o.y+32,45,5);ctx.fillRect(o.x+o.w-75,o.y+32,45,5);ctx.fillStyle='#344a40';ctx.fillRect(o.x+o.w/2-25,o.y+o.h-55,50,55);ctx.fillStyle='#c8f27a';ctx.font='bold 12px system-ui';ctx.fillText('FIELD STATION',o.x+o.w/2-53,o.y+o.h+17)}
+else if(o.type==='crate'){ctx.fillStyle='#8a6542';ctx.fillRect(o.x,o.y,o.w,o.h);ctx.strokeStyle='#4c3929';ctx.lineWidth=6;ctx.strokeRect(o.x+3,o.y+3,o.w-6,o.h-6);ctx.beginPath();ctx.moveTo(o.x,o.y);ctx.lineTo(o.x+o.w,o.y+o.h);ctx.moveTo(o.x+o.w,o.y);ctx.lineTo(o.x,o.y+o.h);ctx.stroke()}
+else if(o.type==='water'){ctx.fillStyle='#173d3b';ctx.beginPath();ctx.ellipse(o.x+o.w/2,o.y+o.h/2,o.w/2,o.h/2,0,0,7);ctx.fill();ctx.strokeStyle='#67958a';for(let i=0;i<4;i++){ctx.beginPath();ctx.ellipse(o.x+o.w/2,o.y+o.h/2,i*22+18,i*12+8,0,0,7);ctx.stroke()}}
+else if(o.type==='rock'){ctx.fillStyle='#62695b';ctx.beginPath();ctx.moveTo(o.x,o.y+o.h);ctx.lineTo(o.x+20,o.y+25);ctx.lineTo(o.x+o.w*.4,o.y);ctx.lineTo(o.x+o.w,o.y+o.h*.3);ctx.lineTo(o.x+o.w-12,o.y+o.h);ctx.fill();ctx.strokeStyle='#899080';ctx.stroke()}
+else if(o.type==='stump'){ctx.fillStyle='#5b4631';ctx.beginPath();ctx.ellipse(o.x+o.w/2,o.y+o.h/2,o.w/2,o.h/2,0,0,7);ctx.fill();ctx.fillStyle='#b08b5a';ctx.beginPath();ctx.ellipse(o.x+o.w/2,o.y+o.h/2,o.w/2-7,o.h/2-6,0,0,7);ctx.fill()}
+else if(o.type==='car'){ctx.fillStyle='#59615a';ctx.fillRect(o.x,o.y+15,o.w,o.h-20);ctx.fillStyle='#9aa59a';ctx.fillRect(o.x+20,o.y,o.w-40,25);ctx.fillStyle='#233732';ctx.fillRect(o.x+27,o.y+4,35,18);ctx.fillRect(o.x+75,o.y+4,35,18);ctx.fillStyle='#111';ctx.beginPath();ctx.arc(o.x+30,o.y+o.h-5,12,0,7);ctx.arc(o.x+o.w-30,o.y+o.h-5,12,0,7);ctx.fill()}
+else if(o.type==='sign'){ctx.fillStyle='#5c4932';ctx.fillRect(o.x+39,o.y+15,10,90);ctx.fillStyle='#b9ad80';ctx.fillRect(o.x,o.y,o.w,o.h*.45);ctx.fillStyle='#29392f';ctx.font='bold 13px system-ui';ctx.fillText('MILE',o.x+20,o.y+24);ctx.fillText('09',o.x+33,o.y+42)}
+else if(o.type==='road'){/* road drawn as terrain */}
+ctx.restore()}
+function drawPlayer(){ctx.save();ctx.translate(player.x,player.y);ctx.fillStyle='#0005';ctx.beginPath();ctx.ellipse(0,14,14,6,0,0,7);ctx.fill();ctx.fillStyle='#d2c8a4';ctx.beginPath();ctx.arc(0,-5,9,0,7);ctx.fill();ctx.fillStyle='#496c5a';ctx.fillRect(-10,4,20,18);ctx.fillStyle='#293d35';ctx.fillRect(-8,20,6,10);ctx.fillRect(3,20,6,10);ctx.fillStyle='#7c9977';ctx.fillRect(-11,7,4,10);ctx.fillRect(7,7,4,10);ctx.fillStyle='#212d27';if(player.dir==='down'){ctx.fillRect(-5,-7,3,3);ctx.fillRect(3,-7,3,3)}else{ctx.fillRect(player.dir==='left'?-6:3,-7,3,3)}ctx.restore()}
+function nearest(){let best=null,dist=999;mapObjects.forEach(o=>{let x=o.x+o.w/2,y=o.y+o.h/2,d=Math.hypot(x-player.x,y-player.y);if(d<Math.max(o.w,o.h)/2+42&&d<dist){best=o;dist=d}});return best}
+function render(){drawWorld();requestAnimationFrame(render)}
+function move(dx,dy){if($('overlay').classList.contains('show')||enemy)return;let nx=Math.max(20,Math.min(W-20,player.x+dx)),ny=Math.max(20,Math.min(H-20,player.y+dy));player.dir=dx<0?'left':dx>0?'right':dy<0?'up':'down';player.x=nx;player.y=ny;steps++;
+if(steps%6===0&&current!==4&&Math.random()<.17){let pool=current===1?['mudmaw','lakeglass','redcapper']:current===2?['redcapper','hollowhorn','nightstitch']:current===3?['roadwailer','nightstitch','lanternling']:['mossback','lanternling','hollowhorn','nightstitch'];if(Math.random()<.045)pool.push('thunderstag');startBattle(pool[Math.floor(Math.random()*pool.length)])}
+}
+function interact(){if(enemy)return;let o=nearest();if(o){if(o.type==='station'||current===4){showStation();return}if(o.type==='crate'){pods+=3;research+=5;addLog('Supplies recovered: +3 containment pods, +5 research.');o.type='stump';o.label='EMPTY CRATE';updateUI();return}if(o.type==='sign'){addLog('Mile marker is scratched with the words: “DON’T FOLLOW THE SECOND LIGHT.”');research+=2;updateUI();return}if(o.type==='water'){addLog('You hear a slow, heavy movement beneath the black water.');research+=2;updateUI();return}if(o.type==='rock'){addLog('Fresh claw marks stop abruptly at the rock face.');research+=2;updateUI();return}if(o.type==='car'){addLog('Inside the car: a damp notebook. “It looked like a person until it turned around.”');research+=3;updateUI();return}}
+if(places[current].site&&!sites.has(current)){sites.add(current);research+=8;addLog('Site documented: '+places[current].name+'. +8 research.');updateUI();showSiteReport();return}
+addLog('Nothing nearby but wind, insects, and the feeling of being watched.')}
+function showSiteReport(){openModal('SITE INVESTIGATED',`<div class="notice">Field record added: <strong>${places[current].name}</strong></div><p>${places[current].desc}</p><p>Your notes suggest these sightings are connected. Four locations are marked on your map. Keep exploring and record the creatures you find.</p><button class="primary" onclick="document.getElementById('overlay').classList.remove('show')">Continue exploring</button>`)}
+function startBattle(id){let level=current===0?2:current===1?3:current===2?4:current===3?4:2;enemy={mon:makeMon(id,level+Math.floor(Math.random()*2)),shield:0};dex.add(id);active=party.findIndex(p=>p.hp>0);if(active<0){party.forEach(p=>p.hp=Math.ceil(p.maxHp*.6));active=0;addLog('Your team regrouped at the trailhead.')}addLog('Sighting confirmed: '+sp(id).name+'!');showBattle('A wild '+sp(id).name+' appeared!')}
+function showBattle(message){let e=enemy.mon,p=party[active];openModal('UNIDENTIFIED CREATURE',`<div class="notice" id="battleMessage">${message}</div><div class="battlegrid"><div class="creaturecard"><div class="creatureart" id="enemyArt"></div><div class="creaturetitle"><span>${sp(e.id).name}</span><span class="tag">${sp(e.id).type}</span></div><div class="small">Lv. ${e.level} · ${sp(e.id).rarity}</div><div class="hpbar"><i style="width:${e.hp/e.maxHp*100}%;background:#ef9aaf"></i></div><div class="small">${e.hp} / ${e.maxHp} HP</div></div><div class="creaturecard"><div class="creatureart" id="allyArt"></div><div class="creaturetitle"><span>${sp(p.id).name}</span><span class="tag">${sp(p.id).type}</span></div><div class="small">Lv. ${p.level}</div><div class="hpbar"><i style="width:${p.hp/p.maxHp*100}%"></i></div><div class="small">${p.hp} / ${p.maxHp} HP</div></div></div><div class="moves" id="moveButtons"></div><div class="battlefooter"><button class="primary" id="podButton">Throw containment pod (${pods})</button><button id="switchButton">Switch cryptid</button><button id="runButton">Retreat</button></div><div class="small" style="margin-top:10px">Tip: weaker cryptids are easier to document and contain. You can catch a creature even if your team is full; it will be kept in your Field Guide.</div>`);
+drawArtIn('enemyArt',e.id);drawArtIn('allyArt',p.id);
+let moves=$('moveButtons');sp(p.id).moves.forEach((m,i)=>{let b=document.createElement('button');b.innerHTML='<strong>'+m[0]+'</strong><br><span class="small">Power '+(m[1]||'—')+'</span>';b.onclick=()=>playerMove(i);moves.appendChild(b)});
+$('podButton').onclick=throwPod;$('switchButton').onclick=showSwitch;$('runButton').onclick=()=>{enemy=null;closeModal();addLog('You backed away carefully.');}
+}
+function drawArtIn(id,speciesId){let c=document.createElement('canvas');c.width=260;c.height=150;let cx=c.getContext('2d');cx.fillStyle='#1c332b';cx.fillRect(0,0,260,150);for(let i=0;i<16;i++){cx.fillStyle='#7ba17722';cx.beginPath();cx.arc((i*47)%260,(i*61)%150,10+i%13,0,7);cx.fill()}ctx.save();let old=ctx;ctx=cx;drawCreature(speciesId,130,76,1.2,true);ctx=old;ctx.restore();$(id).innerHTML='';$(id).appendChild(c)}
+function playerMove(i){if(!enemy||turnBusy)return;let p=party[active],m=sp(p.id).moves[i],e=enemy.mon;turnBusy=true;let msg='';
+if(m[1]===0){p.hp=Math.min(p.maxHp,p.hp+5);msg=sp(p.id).name+' used '+m[0]+' and recovered a little energy.'}
+else{let damage=Math.max(2,m[1]+p.atk-e.def+Math.floor(Math.random()*4)-1);e.hp=Math.max(0,e.hp-damage);msg=sp(p.id).name+' used '+m[0]+'! '+damage+' impact.'}
+if(e.hp<=0){research+=5;p.xp+=12;addLog(sp(e.id).name+' was safely dispersed. +5 research.');if(p.xp>=p.level*15){p.xp=0;p.level++;p.maxHp+=4;p.hp=Math.min(p.maxHp,p.hp+8);p.atk++;addLog(sp(p.id).name+' advanced to level '+p.level+'!')}updateUI();turnBusy=false;showBattleEnd(sp(e.id).name+' retreated into the dark. Your research team gained 5 points.');return}
+enemyTurn(msg)}
+function enemyTurn(msg){let p=party[active],e=enemy.mon;let dmg=Math.max(2,e.atk-p.def+Math.floor(Math.random()*4)-1);p.hp=Math.max(0,p.hp-dmg);msg+=' '+sp(e.id).name+' countered for '+dmg+' damage.';if(p.hp<=0){let next=party.findIndex(a=>a.hp>0);if(next>=0){active=next;msg+=' '+sp(party[active].id).name+' steps in!'}else{party.forEach(a=>a.hp=Math.ceil(a.maxHp*.6));enemy=null;updateUI();turnBusy=false;showBattleEnd('Your team retreated safely to the trailhead. Everyone has recovered to 60% health.');return}}
+turnBusy=false;showBattle(msg)}
+function throwPod(){if(!enemy||turnBusy)return;if(pods<=0){$('battleMessage').textContent='No containment pods left! Visit the field station or recover a supply crate.';return}pods--;let e=enemy.mon;let chance=.25+(.6*(1-e.hp/e.maxHp));if(sp(e.id).rarity==='Mythic')chance*=.48;if(Math.random()<chance){let id=e.id;research+=10;dex.add(id);if(party.length<4){party.push(makeMon(id,e.level));addLog(sp(id).name+' contained and joined your team!')}else{addLog(sp(id).name+' contained; its data was added to your guide. Your team is full.')}enemy=null;updateUI();closeModal();openModal('CONTAINMENT SUCCESSFUL',`<div class="notice">✓ ${sp(id).name} documented and contained.</div><p>${sp(id).desc}</p><p>+10 research points. ${party.length<4?'The cryptid joined your active team.':'Your team is full, but the sighting is saved in your guide.'}</p><button class="primary" onclick="document.getElementById('overlay').classList.remove('show')">Continue</button>`)}else{enemyTurn('The containment pod bounced away! The cryptid resisted capture.');}}
+function showBattleEnd(message){enemy=null;openModal('FIELD ENCOUNTER ENDED',`<div class="notice">${message}</div><button class="primary" onclick="document.getElementById('overlay').classList.remove('show')">Back to the field</button>`)}
+function showSwitch(){let html='<p>Choose a cryptid to send into the field.</p><div class="gridcards">';party.forEach((p,i)=>{html+=`<div class="cryptidcard"><div class="emoji">${sp(p.id).emoji}</div><strong>${sp(p.id).name}</strong><p>Lv. ${p.level} · ${p.hp}/${p.maxHp} HP</p><button ${p.hp<=0?'disabled':''} onclick="window.pickSwitch(${i})">Switch in</button></div>`});html+='</div>';openModal('CHANGE ACTIVE CRYPTID',html)}
+window.pickSwitch=i=>{if(party[i].hp>0){active=i;showBattle(sp(party[i].id).name+' is ready! The wild cryptid is watching.')}};
+function showStation(){openModal('PINE COUNTY FIELD STATION',`<div class="notice">Safe zone · Research Outpost</div><p>The field station hums quietly. Someone has pinned a map of the county to the wall. Several places are circled in red.</p><div class="gridcards"><div class="cryptidcard"><div class="emoji">✚</div><strong>Recover team</strong><p>Restore all team health.</p><button class="primary" onclick="window.restTeam()">Rest & recover</button></div><div class="cryptidcard"><div class="emoji">◉</div><strong>Resupply</strong><p>Trade 5 research points for 3 containment pods.</p><button onclick="window.buyPods()">Resupply pods</button></div><div class="cryptidcard"><div class="emoji">🗺️</div><strong>County map</strong><p>Review known field sites.</p><button onclick="window.showMap()">Open map</button></div></div>`)}
+window.restTeam=()=>{party.forEach(p=>p.hp=p.maxHp);closeModal();updateUI();addLog('Your team rested at the field station and fully recovered.');}
+window.buyPods=()=>{if(research<5){$('modalBody').insertAdjacentHTML('beforeend','<p class="small">Not enough research points. Document more sightings.</p>');return}research-=5;pods+=3;updateUI();showStation();addLog('Field station issued 3 containment pods.');}
+function openModal(title,body){$('modalTitle').textContent=title;$('modalBody').innerHTML=body;$('overlay').classList.add('show')}
+function closeModal(){$('overlay').classList.remove('show')}
+function updateUI(){$('caughtCount').textContent=dex.size;$('capsuleCount').textContent=pods;$('researchCount').textContent=research;$('badgeCount').textContent=sites.size+'/4';$('partyList').innerHTML=party.map((p,i)=>`<div class="partyitem"><div class="miniart">${sp(p.id).emoji}</div><div style="flex:1;min-width:0"><div class="partyname">${sp(p.id).name} <span class="small">Lv.${p.level}</span></div><div class="partytype">${sp(p.id).type}${i===active?' · ACTIVE':''}</div><div class="hpbar"><i style="width:${p.hp/p.maxHp*100}%;background:${p.hp/p.maxHp<.3?'#ef9aaf':'#a9e879'}"></i></div><div class="small">${p.hp}/${p.maxHp} HP</div></div></div>`).join('');$('locationName').textContent=places[current].name;$('locationSub').textContent=places[current].sub;$('weather').textContent=places[current].weather;$('objective').textContent=sites.size<4?'Investigate the four marked sites and document strange wildlife. '+sites.size+' of 4 sites logged.':'All four sites documented. Keep researching rare cryptids.'}
+function showDex(){let html='<div class="notice">Field guide: '+dex.size+' of '+species.length+' cryptids documented. Select a creature in the guide to read your notes.</div><div class="gridcards">';species.forEach(s=>{let found=dex.has(s.id);html+=`<div class="cryptidcard"><div class="emoji">${found?s.emoji:'?'}</div><strong>${found?s.name:'Unknown Sighting'}</strong><span class="tag">${found?s.type:'Undocumented'}</span><p>${found?s.desc:'No verified report yet. Search the county for evidence.'}</p><p class="small">${found?s.rarity:'???'}</p></div>`});html+='</div>';openModal('FIELD GUIDE / BESTIARY',html)}
+window.showMap=showMap;
+function showMap(){let html='<div class="notice">Select a field site to travel there. Travel may trigger new sightings.</div><div class="gridcards">';places.forEach((p,i)=>{html+=`<div class="cryptidcard"><div class="emoji">${i===4?'⌂':i===1?'≈':i===2?'⛰':i===3?'▤':'♧'}</div><strong>${p.name}</strong><p>${p.desc}</p><p class="small">${sites.has(i)?'✓ Documented':p.site?'Marked field site':'Open field area'}</p><button class="${i===current?'primary':''}" onclick="window.travelTo(${i})" ${i===current?'disabled':''}>Travel here</button></div>`});html+='</div>';openModal('PINE COUNTY FIELD MAP',html)}
+window.travelTo=i=>{current=i;player.x=480;player.y=320;buildWorld();updateUI();closeModal();addLog('Travelled to '+places[current].name+'.');if(current===4)addLog('Field station: rest and resupply before heading out.')}
+function showPack(){openModal('FIELD PACK',`<div class="stats"><div class="stat"><strong>${pods}</strong><span>Containment pods</span></div><div class="stat"><strong>${research}</strong><span>Research points</span></div><div class="stat"><strong>${party.length}/4</strong><span>Team capacity</span></div><div class="stat"><strong>${sites.size}/4</strong><span>Sites documented</span></div></div><p style="margin-top:14px">Containment pods are experimental field equipment designed to safely hold unusual creatures. We still don't know how they work.</p><button onclick="window.showMap()">County map</button> <button onclick="window.openGuide()">Field guide</button>`)}
+window.openGuide=showDex;
+function keyboard(e){let k=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();if($('overlay').classList.contains('show')){if(k==='escape')closeModal();return}let d={w:[0,-13],arrowup:[0,-13],s:[0,13],arrowdown:[0,13],a:[-13,0],arrowleft:[-13,0],d:[13,0],arrowright:[13,0]}[k];if(d)move(...d);else if(k==='e'||k===' ')interact();else if(k==='m')showMap();else if(k==='j')showDex();else if(k==='i')showPack()}
+document.addEventListener('keydown',keyboard);
+document.querySelectorAll('[data-move]').forEach(b=>{let dir=b.dataset.move;const v={up:[0,-14],down:[0,14],left:[-14,0],right:[14,0]}[dir];b.addEventListener('pointerdown',e=>{e.preventDefault();move(...v)})});
+$('mapBtn').onclick=showMap;$('dexBtn').onclick=showDex;$('bagBtn').onclick=showPack;$('closeModal').onclick=closeModal;$('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))closeModal()});
+function save(){try{localStorage.setItem('cryptidUnknownSave',JSON.stringify({current,steps,pods,research,sites:[...sites],dex:[...dex],party,worldSeed,logs}))}catch(e){}}
+function load(){try{let s=JSON.parse(localStorage.getItem('cryptidUnknownSave'));if(s){current=s.current||0;steps=s.steps||0;pods=s.pods??6;research=s.research||0;sites=new Set(s.sites||[]);dex=new Set(s.dex||[]);party=s.party||party;worldSeed=s.worldSeed||41;logs=s.logs||logs}}catch(e){}}
+load();buildWorld();updateUI();render();setInterval(save,4000);
+})();
+</script>
+</body>
+</html>
